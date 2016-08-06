@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-enum Bool{
+typedef enum {
   false = (1 == 0),
   true = !false
 } bool;
@@ -12,6 +12,9 @@ enum Bool{
 struct {
   int x[8], y[8];
 } moveon = {{2,1,-1,-2,-2,-1,1,2}, {1,2,2,1,-1,-2,-2,-1}};
+
+bool isvisited(int, int);
+bool ktour(int **, int, int, int);
 
 /* main function */
 int
@@ -28,4 +31,5 @@ main (int argc, char **argv)
   return 0;
   
 }
+
 
