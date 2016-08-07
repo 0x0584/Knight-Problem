@@ -154,14 +154,14 @@ main (int argc, const char **argv)
   
   board_t *chess = initboard(&start);
 
+  printf("chess:%d\n\n", sizeof(chess));
+
   
   if(ktour(chess, 1, start))
-    {
-      putboard(chess);
-    }
+    putboard(chess);
   else
     printf("no tour possible %d x %d (%d, %d)\n",
-	   chess->dim.row, chess->dim.col, start.row, start.col);
+  	   chess->dim.row, chess->dim.col, start.row, start.col);
   
   puts("@@");
   dropboard(chess);
@@ -232,7 +232,7 @@ initboard(pair_t *s)
 {
   int i, j;
   int w = (w = width) <= 0 ? 8 : w, h = (h = height) <= 0 ? w : h;
-  board_t *t = (board_t *) malloc((w * sizeof(int )) + sizeof(board_t ));
+  board_t *t = (board_t *) malloc(sizeof(board_t ));
   
   /* board dimensions */
   t->dim.col = h;
@@ -249,7 +249,7 @@ initboard(pair_t *s)
 
   for(i = 0; i < w; ++i)
     for(j = 0; j < h; ++j)
-      t->board[i][j] = NOTVISITED;
+      t->board[i][j] = 0;
 
   if(debug) printf("(%d*%d)%d\t{%d,%d}\n", w, h, t->size, s->row, s->col);
   
@@ -278,7 +278,7 @@ isvisited (pair_t square, pair_t dim)
 bool
 ktour (board_t *board, int steps, pair_t squr)
 {
-  int dir;			/* the 9 possible move of the  */
+  int dir;			/* the 8 possible move of the  */
   if(!isvisited(squr, board->dim) ||
      board->board[squr.row][squr.col] != NOTVISITED) return false;
 
