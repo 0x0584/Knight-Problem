@@ -28,10 +28,17 @@
 #include <string.h>
 #include <time.h>
 #include <popt.h>
-#define KNIGHT_MOVES  8
+
 #define DIM(n, m) (n*m)
+
+
+
+/* The status of an individual square on the board 
+ * if it was visited by the Knight(1) or not(0).
+ */
 #define NOTVISITED 0
 #define VISTED  1
+
 /* <--------------------( Enumerations )--------------------> */
 /* Boolean type.  */
 typedef enum __BOOLEAN {
@@ -39,20 +46,21 @@ typedef enum __BOOLEAN {
   true = !false
 } bool;
 
-/* The status of an individual square on the board 
- * if it was visited by the Knight(1) or not(0).
- */
-
-
-
-
 /* <--------------------( Data Structures )--------------------> */
 /* The knight move is unusual among chess pieces. When it moves,
- * it can move to a square that is two squares horizontally(left/right) and one
- * square vertically(up/down), or two squares vertically and one square 
- * horizontally. The complete move therefore looks like the letter L.
+ * it can move to a square that is two squares horizontally(left/right)
+ * and one square vertically(up/down), or two squares vertically and
+ * one square horizontally. The complete move therefore looks 
+ * like the letter L.
+ *
  * The moves here are represented by pair {0 <= i < 8 | (x[i], y[i])} which 
  * represente all the possible moves of the night on the board. 
+ * 
+ * possible moves of the knight:
+ */
+#define KNIGHT_MOVES  8
+/* (1H, 2V) (-1H, -2V) (1H, -2V) (-1, 2V)
+ * (2H, 1V) (-2H, 1V) (2H, -1V) (-2H, 1V)
  */
 struct __KNIGHT_MOVES {
   int x[KNIGHT_MOVES], y[KNIGHT_MOVES];
@@ -102,7 +110,8 @@ static inline bool isvisited(pair_t, pair_t);
 bool ktour(board_t *, int, pair_t);
 
 /*initboard(square)
- *	this function initialize all the necessary variable to start the tour. 
+ *	this function initialize all the necessary variable
+ *	to start the tour. 
  * 
  * @PARAMETERS: 
  *	 squrae: the starting square (row/column).
@@ -121,7 +130,7 @@ board_t *initboard(pair_t *);
 void dropboard(board_t *);
 
 /* chechargs(argc, argv, square);
- *	handle arguments parsed to the program using libpopt (see --help).
+ *	handle arguments parsed to the program using libpopt
  *
  * @PARAMETERS:
  *	argc, argv: argument counter and vector.
@@ -130,14 +139,14 @@ void dropboard(board_t *);
 void checkargs(int, const char **, pair_t *);
 
 void putboard(board_t *);
+
 /* <--------------------( Global Variables )--------------------> */
-/* Arguments of teh program */
+/* Arguments of the program */
 bool debug 	= false;	/* -d --debug */
 bool recursive 	= false;	/* -R --recursive */
 bool algn 	= false;	/* -A --algebric-notation */
 int width;			/* -w --width */
 int height;			/* -h --height */
-
 
 /* <---------------------------------------------------------> 
  * <--------------------( Main Function )--------------------> 
