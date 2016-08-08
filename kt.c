@@ -322,6 +322,7 @@ ktour (board_t *board, int steps, pair_t squr)
   board->board[squr.row][squr.col] = NOTVISITED;
   return false;
 }
+
 void
 putboard(board_t *c)
 {
