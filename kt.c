@@ -30,7 +30,8 @@
 #include <popt.h>
 #define KNIGHT_MOVES  8
 #define DIM(n, m) (n*m)
-
+#define NOTVISITED 0
+#define VISTED  1
 /* <--------------------( Enumerations )--------------------> */
 /* Boolean type.  */
 typedef enum __BOOLEAN {
@@ -41,10 +42,9 @@ typedef enum __BOOLEAN {
 /* The status of an individual square on the board 
  * if it was visited by the Knight(1) or not(0).
  */
-enum __STATUS {
-  NOTVISITED = 0,
-  VISTED = 1
-};
+
+
+
 
 /* <--------------------( Data Structures )--------------------> */
 /* The knight move is unusual among chess pieces. When it moves,
@@ -148,20 +148,37 @@ main (int argc, const char **argv)
 {
   srand(time(NULL));
   
+  int i, j;
   pair_t start = { -1, -1 };
   puts("@");
   checkargs(argc, argv, &start);
   
   board_t *chess = initboard(&start);
-
-  printf("chess:%d\n\n", sizeof(chess));
-
-  
+    for(i = 0; i < chess->dim.row; ++i)
+      for(j = 0; j < chess->dim.col; ++j)
+	chess->board[i][j] = 0;
+  /* printf("chess:%d\n\n", sizeof(chess)); */
+  printf("\n");
+  for(i = 0; i < chess->dim.row; ++i)
+    {
+    for(j = 0; j < chess->dim.col; ++j)
+      printf("%3d", chess->board[i][j]);
+    printf("\n");
+    }
+  getchar();
   if(ktour(chess, 1, start))
     putboard(chess);
   else
     printf("no tour possible %d x %d (%d, %d)\n",
   	   chess->dim.row, chess->dim.col, start.row, start.col);
+  printf("\n");
+  for(i = 0; i < chess->dim.row; ++i)
+    {
+    for(j = 0; j < chess->dim.col; ++j)
+      printf("%3d", chess->board[i][j]);
+    printf("\n");
+    }
+  getchar();
   
   puts("@@");
   dropboard(chess);
@@ -230,7 +247,8 @@ and show the log", NULL},
 board_t *
 initboard(pair_t *s)
 {
-  int i, j;
+  int i;
+  /* int j; */
   int w = (w = width) <= 0 ? 8 : w, h = (h = height) <= 0 ? w : h;
   board_t *t = (board_t *) malloc(sizeof(board_t ));
   
@@ -244,15 +262,11 @@ initboard(pair_t *s)
   if(s->col <= 0 && s->col >= h) s->col = rand() % h;
   
   /* allocate memory for the board */
-  t->board = (int **) calloc(w, sizeof(int *));
-  for(i = 0; i < h; ++i) t->board[i] = (int *) calloc(1, sizeof(int ));
-
-  for(i = 0; i < w; ++i)
-    for(j = 0; j < h; ++j)
-      t->board[i][j] = 0;
+  t->board = (int **) malloc(w * sizeof(int *));
+  for(i = 0; i < w; ++i) t->board[i] = (int *) malloc( h * sizeof(int ));
 
   if(debug) printf("(%d*%d)%d\t{%d,%d}\n", w, h, t->size, s->row, s->col);
-  
+
   return t;
   /* return 0; */
 }
@@ -263,7 +277,8 @@ dropboard(board_t *foo)
   int i;
   int n = foo->dim.row;
   
-  for (i = 0; i < n; ++i) free(foo->board[i]);
+  for (i = 0; i < n; ++i)
+      free(foo->board[i]);
   
   free(foo);
 }
@@ -278,7 +293,8 @@ isvisited (pair_t square, pair_t dim)
 bool
 ktour (board_t *board, int steps, pair_t squr)
 {
-  int dir;			/* the 8 possible move of the  */
+  int dir;			/* the 8 possible move on the board */
+  
   if(!isvisited(squr, board->dim) ||
      board->board[squr.row][squr.col] != NOTVISITED) return false;
 
