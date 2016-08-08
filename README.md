@@ -4,4 +4,16 @@
 > The knight's tour problem is the mathematical problem of finding a knight's tour. Creating a program to find a knight's tour is a common problem given to computer science students.[1] Variations of the knight's tour problem involve chessboards of different sizes than the usual 8 × 8, as well as irregular (non-rectangular) boards.
 
 # Usage:
-> * make run
+    % x [-dRA?] [-d|--debug] [-R|--recursive] [-A|--algebric-notation] [-r|--row=6]
+        [-c|--column=2] [-w|--width=16] [-h|--height=16] [-?|--help] [--usage] [OPTIONS]
+    
+    -d, --debug                 show debuging messages
+    -R, --recursive             make a tour from every position on the board and show the log
+    -A, --algebric-notation     show moves as chess algebric notation
+    -r, --row=6                 set spesifice row to start with
+    -c, --column=2              set specifice column to start with
+    -w, --width=16              set the width of the board
+    -h, --height=16             set the height of the board
+  
+
+
