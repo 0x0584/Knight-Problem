@@ -29,9 +29,8 @@
 #include <time.h>
 #include <popt.h>
 
+/* the number of the squares in the board */
 #define DIM(n, m) (n*m)
-
-
 
 /* The status of an individual square on the board 
  * if it was visited by the Knight(1) or not(0).
@@ -69,7 +68,7 @@ struct __KNIGHT_MOVES {
   {1,2,2,1,-1,-2,-2,-1}		/* VERTICAL */
 };
 
-/* Each pair represente a square or a positoin on the board, 
+/* Each pair represente a square or a position on the board, 
  * it is construted by a row and a column. */
 typedef struct __PAIR{
   int row, col;
