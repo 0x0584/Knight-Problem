@@ -1,13 +1,13 @@
 
-# ♞ Knight's tour problem (under-dev)
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/d/da/Knight%27s_tour_anim_2.gif" align="left" width="300px" height="300px"/>
+<img align="left" width="0" height="192px" hspace="10"/>
+
+# ♞ Knight's tour problem ![MIT License](https://img.shields.io/codeship/d6c1ddd0-16a3-0132-5f85-2e35c05e22b1.svg?maxAge=2592000)
 
 
  > A knight's tour is a sequence of moves of a knight on a chessboard such that the knight visits every square only once. If the knight ends on a square that is one knight's move from the beginning square (so that it could tour the board again immediately, following the same path), the tour is closed, otherwise it is open.
-> ![img](https://upload.wikimedia.org/wikipedia/commons/d/da/Knight%27s_tour_anim_2.gif)
 > > The knight's tour problem is the mathematical problem of finding a knight's tour. Creating a program to find a knight's tour is a common problem given to computer science students. Variations of the knight's tour problem involve chessboards of different sizes than the usual 8 × 8, as well as irregular (non-rectangular) boards. (Wikipedia)
- 
-* Issues:
-   *  not working!
 
 # Usage:
     % x [-dRA?] [-d|--debug] [-R|--recursive] [-A|--algebric-notation] [-r|--row=6]
