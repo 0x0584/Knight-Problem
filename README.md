@@ -8,7 +8,7 @@
 
  A **knight's tour** is a _sequence of moves_ of a knight on a chessboard such that the knight _visits every square only once_. If the knight ends on a square that is one knight's move from the beginning square (so that it could tour the board again immediately, following the same path), the tour is closed, otherwise it is open.
  
- > The knight's tour problem is the _mathematical problem of finding a knight's tour_. Creating a program to find a knight's tour is a _common problem given to computer science students_. Variations of the knight's tour problem involve chessboards of different sizes than the usual 8 × 8, as well as irregular (non-rectangular) boards.
+ > The knight's tour problem is the _mathematical problem of finding a knight's tour_. Creating a program to find a knight's tour is a _common problem given to computer science students_. Variations of the knight's tour problem involve chessboards of different sizes than the usual 8 × 8.
  
  * [Source](https://en.wikipedia.org/wiki/Knight's_tour)
 
