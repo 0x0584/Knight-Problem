@@ -76,7 +76,7 @@ typedef struct __PAIR{
 
 /* the Chess board */
 typedef struct __CHESS_BOARD {
-  int **board;
+  short **board;
   pair_t dim;
   int size;			/* DIM(Width * Height) */
 } board_t;
@@ -93,7 +93,7 @@ typedef struct __CHESS_BOARD {
  * 	1 if the square is ni the board.
  * 	0 if it's not.
  */
-static inline bool isvisited(pair_t, pair_t);
+static inline bool ispossible(pair_t, pair_t);
 
 /* ktour(board, steps, squr)
  *
@@ -106,7 +106,7 @@ static inline bool isvisited(pair_t, pair_t);
  *	1 if the knight complete his tour on the board.
  *	0 if it is not possible to complete his tour.
  */
-bool ktour(board_t *, int, pair_t);
+bool ktour(board_t *, /* int, */ pair_t);
 
 /*initboard(square)
  *	this function initialize all the necessary variable
@@ -162,6 +162,7 @@ main (int argc, const char **argv)
   checkargs(argc, argv, &start);
   board_t *chess = initboard(&start);  
 
+  
   /* printf("chess:%d\n\n", sizeof(chess)); */
   printf("\n");
   /* for(i = 0; i < chess->dim.row; ++i) */
@@ -170,8 +171,10 @@ main (int argc, const char **argv)
   /*     printf("%3d", chess->board[i][j]); */
   /*   printf("\n"); */
   /*   } */
+  
   putboard(chess);  
-  getchar();
+
+  /* getchar(); */
   /* printf("\n"); */
   /* for(i = 0; i < chess->dim.row; ++i) */
   /*   { */
@@ -181,7 +184,7 @@ main (int argc, const char **argv)
   /*   } */
   /* getchar(); */
   
-  puts("@@");
+  /* puts("@@"); */
   dropboard(chess);
   
   return EXIT_SUCCESS;
@@ -193,7 +196,7 @@ checkargs(int c, const char **v, pair_t *s)
 {
   int argrow 	= 0;    
   int argcol 	= 0;
-  
+
   struct poptOption optionsTable[] = {
     {"debug", 'd', POPT_ARG_NONE, &debug, \
      'd', "show debuging messages", NULL },
@@ -213,8 +216,8 @@ and show the log", NULL},
     POPT_AUTOHELP
     POPT_TABLEEND
   };
-  
   poptContext optCon = poptGetContext(NULL, c, v, optionsTable, 0);
+
   poptSetOtherOptionHelp(optCon, "[OPTIONS]");
 
   char rc;
@@ -243,13 +246,18 @@ and show the log", NULL},
     }
   
   if(debug) printf("[%d, %d]\n", width, height);
+
+  putchar('\n');
+  if(recursive) puts("recursive enabled");
+  if(algn) puts("algebric notation enabled");
+  if(debug) puts("debug enabled");
+  putchar('\n');
 }
 
 board_t *
 initboard(pair_t *s)
 {
   int i, j;
-  /* int j; */
   int w = (w = width) <= 0 ? 8 : w, h = (h = height) <= 0 ? w : h;
   board_t *t = (board_t *) malloc(sizeof(board_t ));
   
@@ -259,20 +267,19 @@ initboard(pair_t *s)
   t->size = DIM(h, w);
 
   /* starting position */
-  if(s->row <= 0 && s->row >= w) s->row = rand() % w;
-  if(s->col <= 0 && s->col >= h) s->col = rand() % h;
+  if(s->row <= 0 || s->row >= w) s->row = rand() % w;
+  if(s->col <= 0 || s->col >= h) s->col = rand() % h;
   
   /* allocate memory for the board */
-  t->board = (int **) malloc(w * sizeof(int *));
-  for(i = 0; i < w; ++i) t->board[i] = (int *) malloc( h * sizeof(int ));
+  t->board = (short **) malloc(w * sizeof(short *));
+  for(i = 0; i < w; ++i) t->board[i] = (short *) malloc( h * sizeof(short ));
 
   if(debug) printf("(%d*%d)%d\t{%d,%d}\n", w, h, t->size, s->row, s->col);
 
-
   for(i = 0; i < t->dim.row; ++i)
     for(j = 0; j < t->dim.col; ++j)
-      t->board[i][j] = false;
-    
+      t->board[i][j] = (i == s->row && s->col == j) ? true : false;
+
   return t;
   /* return 0; */
 }
@@ -290,7 +297,7 @@ dropboard(board_t *foo)
 }
 
 static inline bool
-isvisited (pair_t square, pair_t dim)
+ispossible(pair_t square, pair_t dim)
 {
   return (0 <= square.row && square.row < dim.row) &&
     (0 <= square.col && square.col < dim.col);
@@ -300,44 +307,82 @@ static inline bool
 isfinished(board_t *foo)
 {
   int i, j;
+
   for(i = 0; i < foo->dim.row; ++i)
     for(j = 0; j < foo->dim.col; ++j)
       if(foo->board[i][j] == NOTVISITED)
 	return false;
+
   return true;
 }
-bool
-ktour (board_t *board, int steps, pair_t squr)
+
+static inline bool
+move(board_t *foo, pair_t s)
 {
-  return true;
+  if(ispossible(s, foo->dim))
+    {
+      foo->board[s.row][s.col] = true;
+      return true;
+    }
+  return false;
 }
+/* ktour */
+bool
+ktour (board_t *board, /* int steps, */ pair_t squr)
+{
+  bool end = false;
+  while(end)
+    {
+      int m = -1;
+      
+      do{
+	++m;
+	squr.row += moveon.x[m], squr.col += moveon.y[m];
+	}while(ispossible(squr, board->dim));
+      
+      if(!isfinished(board)) return false;
+      end = move(board, squr);
+    }
+       
+  return false;
+}
+
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KNRM  "\x1B[0m"
 
 void
 putboard(board_t *c)
 {
   int i, j;
-  printf("  ");
+  char *spc = "  ";
+  
+  printf("%s ", spc);
   
   /* A B C... */
-  for(i = 'A'; i < 'A' + c->dim.row; ++i)
+  for(i = 'a'; i < 'a' + c->dim.col; ++i)
     printf("  %c ", i);
   printf("\n");
 
   for(i = 0; i < c->dim.row; ++i)
     {
-      printf("  ");
+      printf("%s ", spc);
       for(j = 0; j < c->dim.col; ++j)
 	printf("+---");
       printf("+\n");
 
       /* 1 2 3... */
-      printf("%d ", i + 1);
+      printf("%-3d", i);
       for(j = 0; j < c->dim.col; ++j)
-	printf("| %d ", c->board[i][j]);
-      printf("|\n");
+	{printf("|");
+	  if(c->board[i][j]) printf(KGRN);
+	  printf(" %d ", c->board[i][j]);
+	  printf(KNRM);
+	}
+	printf("|\n");
     }
 
-  printf("  ");
+  printf("%s ", spc);
   for(j = 0; j < c->dim.col; ++j)
     printf("+---");
   printf("+\n");
