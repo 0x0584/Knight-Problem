@@ -30,13 +30,13 @@
 #include <popt.h>
 
 /* the number of the squares in the board */
-#define DIM(n, m) (n*m)
+#define DIM(n, m) (n * m)
 
 /* The status of an individual square on the board 
  * if it was visited by the Knight(1) or not(0).
  */
 #define NOTVISITED 0
-#define VISTED  1
+#define VISITED  1
 
 /* <--------------------( Enumerations )--------------------> */
 /* Boolean type.  */
@@ -78,7 +78,7 @@ typedef struct __PAIR{
 typedef struct __CHESS_BOARD {
   int **board;
   pair_t dim;
-  int size;			/* (Width * Height) */
+  int size;			/* DIM(Width * Height) */
 } board_t;
 
 /* <--------------------( Prototypes )--------------------> */
@@ -156,37 +156,30 @@ main (int argc, const char **argv)
 {
   srand(time(NULL));
   
-  int i, j;
+  /* int i, j; */
   pair_t start = { -1, -1 };
   puts("@");
   checkargs(argc, argv, &start);
-  
-  board_t *chess = initboard(&start);
-    for(i = 0; i < chess->dim.row; ++i)
-      for(j = 0; j < chess->dim.col; ++j)
-	chess->board[i][j] = 0;
+  board_t *chess = initboard(&start);  
+
   /* printf("chess:%d\n\n", sizeof(chess)); */
   printf("\n");
-  for(i = 0; i < chess->dim.row; ++i)
-    {
-    for(j = 0; j < chess->dim.col; ++j)
-      printf("%3d", chess->board[i][j]);
-    printf("\n");
-    }
+  /* for(i = 0; i < chess->dim.row; ++i) */
+  /*   { */
+  /*   for(j = 0; j < chess->dim.col; ++j) */
+  /*     printf("%3d", chess->board[i][j]); */
+  /*   printf("\n"); */
+  /*   } */
+  putboard(chess);  
   getchar();
-  if(ktour(chess, 1, start))
-    putboard(chess);
-  else
-    printf("no tour possible %d x %d (%d, %d)\n",
-  	   chess->dim.row, chess->dim.col, start.row, start.col);
-  printf("\n");
-  for(i = 0; i < chess->dim.row; ++i)
-    {
-    for(j = 0; j < chess->dim.col; ++j)
-      printf("%3d", chess->board[i][j]);
-    printf("\n");
-    }
-  getchar();
+  /* printf("\n"); */
+  /* for(i = 0; i < chess->dim.row; ++i) */
+  /*   { */
+  /*   for(j = 0; j < chess->dim.col; ++j) */
+  /*     printf("%3d", chess->board[i][j]); */
+  /*   printf("\n"); */
+  /*   } */
+  /* getchar(); */
   
   puts("@@");
   dropboard(chess);
@@ -239,9 +232,9 @@ and show the log", NULL},
 	  break;
 	case 'c':	s->col = argcol;
 	  break;
-	case 'w':
+	case 'w':		/*  */
 	  break;
-	case 'h':
+	case 'h':		/*  */
 	  break;
 	default:
 	  poptPrintUsage(optCon, stderr, 0);
@@ -255,7 +248,7 @@ and show the log", NULL},
 board_t *
 initboard(pair_t *s)
 {
-  int i;
+  int i, j;
   /* int j; */
   int w = (w = width) <= 0 ? 8 : w, h = (h = height) <= 0 ? w : h;
   board_t *t = (board_t *) malloc(sizeof(board_t ));
@@ -275,6 +268,11 @@ initboard(pair_t *s)
 
   if(debug) printf("(%d*%d)%d\t{%d,%d}\n", w, h, t->size, s->row, s->col);
 
+
+  for(i = 0; i < t->dim.row; ++i)
+    for(j = 0; j < t->dim.col; ++j)
+      t->board[i][j] = false;
+    
   return t;
   /* return 0; */
 }
@@ -286,7 +284,7 @@ dropboard(board_t *foo)
   int n = foo->dim.row;
   
   for (i = 0; i < n; ++i)
-      free(foo->board[i]);
+    free(foo->board[i]);
   
   free(foo);
 }
@@ -298,47 +296,49 @@ isvisited (pair_t square, pair_t dim)
     (0 <= square.col && square.col < dim.col);
 }
 
+static inline bool
+isfinished(board_t *foo)
+{
+  int i, j;
+  for(i = 0; i < foo->dim.row; ++i)
+    for(j = 0; j < foo->dim.col; ++j)
+      if(foo->board[i][j] == NOTVISITED)
+	return false;
+  return true;
+}
 bool
 ktour (board_t *board, int steps, pair_t squr)
 {
-  int dir;			/* the 8 possible move on the board */
-  
-  if(!isvisited(squr, board->dim) ||
-     board->board[squr.row][squr.col] != NOTVISITED) return false;
-
-  board->board[squr.row][squr.col] = steps;
-
-  if(steps >= board->size) return true;
-
-  for(dir = 0; dir < 8; ++dir)
-    {
-      squr.row += moveon.x[dir];
-      squr.col += moveon.y[dir];
-      
-      if(ktour(board, ++steps, squr))
-	return true;
-    }
-
-  board->board[squr.row][squr.col] = NOTVISITED;
-  return false;
+  return true;
 }
 
 void
 putboard(board_t *c)
 {
   int i, j;
+  printf("  ");
+  
+  /* A B C... */
+  for(i = 'A'; i < 'A' + c->dim.row; ++i)
+    printf("  %c ", i);
+  printf("\n");
 
   for(i = 0; i < c->dim.row; ++i)
     {
+      printf("  ");
       for(j = 0; j < c->dim.col; ++j)
-	printf("+----");
+	printf("+---");
       printf("+\n");
 
+      /* 1 2 3... */
+      printf("%d ", i + 1);
       for(j = 0; j < c->dim.col; ++j)
-	printf("|%3d", c->board[i][j]);
+	printf("| %d ", c->board[i][j]);
       printf("|\n");
     }
-  
+
+  printf("  ");
   for(j = 0; j < c->dim.col; ++j)
-    printf("+\n");
+    printf("+---");
+  printf("+\n");
 }
