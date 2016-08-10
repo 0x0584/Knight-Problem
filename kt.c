@@ -37,6 +37,7 @@
  */
 #define NOTVISITED 0
 #define VISITED  1
+#define STEP_INIT 0
 
 /* <--------------------( Enumerations )--------------------> */
 /* Boolean type.  */
@@ -70,7 +71,7 @@ struct __KNIGHT_MOVES {
 
 /* Each pair represente a square or a position on the board, 
  * it is construted by a row and a column. */
-typedef struct __PAIR{
+typedef struct __PAIR {
   int row, col;
 } pair_t;
 
@@ -93,7 +94,7 @@ typedef struct __CHESS_BOARD {
  * 	1 if the square is ni the board.
  * 	0 if it's not.
  */
-static inline bool ispossible(pair_t, pair_t);
+static inline bool ispossible(pair_t, board_t *);
 
 /* ktour(board, steps, squr)
  *
@@ -106,7 +107,7 @@ static inline bool ispossible(pair_t, pair_t);
  *	1 if the knight complete his tour on the board.
  *	0 if it is not possible to complete his tour.
  */
-bool ktour(board_t *, /* int, */ pair_t);
+bool ktour(board_t *, pair_t, int);
 
 /*initboard(square)
  *	this function initialize all the necessary variable
@@ -163,28 +164,16 @@ main (int argc, const char **argv)
   board_t *chess = initboard(&start);  
 
   
-  /* printf("chess:%d\n\n", sizeof(chess)); */
+
   printf("\n");
-  /* for(i = 0; i < chess->dim.row; ++i) */
-  /*   { */
-  /*   for(j = 0; j < chess->dim.col; ++j) */
-  /*     printf("%3d", chess->board[i][j]); */
-  /*   printf("\n"); */
-  /*   } */
   
   putboard(chess);  
 
-  /* getchar(); */
-  /* printf("\n"); */
-  /* for(i = 0; i < chess->dim.row; ++i) */
-  /*   { */
-  /*   for(j = 0; j < chess->dim.col; ++j) */
-  /*     printf("%3d", chess->board[i][j]); */
-  /*   printf("\n"); */
-  /*   } */
-  /* getchar(); */
-  
-  /* puts("@@"); */
+  if(!ktour(chess, start, STEP_INIT)) puts("No Solution!");
+  else {
+    puts("Tour exist");
+    putboard(chess);
+  }
   dropboard(chess);
   
   return EXIT_SUCCESS;
@@ -196,7 +185,8 @@ checkargs(int c, const char **v, pair_t *s)
 {
   int argrow 	= 0;    
   int argcol 	= 0;
-
+  char rc;
+  
   struct poptOption optionsTable[] = {
     {"debug", 'd', POPT_ARG_NONE, &debug, \
      'd', "show debuging messages", NULL },
@@ -220,30 +210,29 @@ and show the log", NULL},
 
   poptSetOtherOptionHelp(optCon, "[OPTIONS]");
 
-  char rc;
-  while((rc = poptGetNextOpt(optCon)) >= 0)
-    {
-      switch(rc)
-	{
-	case 'd':	debug = true;
-	  break;
-	case 'R':	recursive = true;
-	  break;
-	case 'A':	algn = true;
-	  break;
-	case 'r':	s->row = argrow;
-	  break;
-	case 'c':	s->col = argcol;
-	  break;
-	case 'w':		/*  */
-	  break;
-	case 'h':		/*  */
-	  break;
-	default:
-	  poptPrintUsage(optCon, stderr, 0);
-	  exit(1);
-	}
+
+  
+  while((rc = poptGetNextOpt(optCon)) >= 0) 
+    switch(rc) {
+    case 'd':	debug = true;
+      break;
+    case 'R':	recursive = true;
+      break;
+    case 'A':	algn = true;
+      break;
+    case 'r':	s->row = argrow;
+      break;
+    case 'c':	s->col = argcol;
+      break;
+    case 'w':		/*  */
+      break;
+    case 'h':		/*  */
+      break;
+    default:
+      poptPrintUsage(optCon, stderr, 0);
+      exit(1);
     }
+  
   
   if(debug) printf("[%d, %d]\n", width, height);
 
@@ -297,10 +286,11 @@ dropboard(board_t *foo)
 }
 
 static inline bool
-ispossible(pair_t square, pair_t dim)
+ispossible(pair_t square, board_t *foo)
 {
-  return (0 <= square.row && square.row < dim.row) &&
-    (0 <= square.col && square.col < dim.col);
+  return (0 <= square.row && square.row < foo->dim.row) &&
+    (0 <= square.col && square.col < foo->dim.col) &&
+    (foo->board[square.row][square.col] == 0);
 }
 
 static inline bool
@@ -316,35 +306,28 @@ isfinished(board_t *foo)
   return true;
 }
 
-static inline bool
-move(board_t *foo, pair_t s)
-{
-  if(ispossible(s, foo->dim))
-    {
-      foo->board[s.row][s.col] = true;
-      return true;
-    }
-  return false;
-}
 /* ktour */
 bool
-ktour (board_t *board, /* int steps, */ pair_t squr)
+ktour (board_t *board, pair_t current, int steps)
 {
-  bool end = false;
-  while(end)
-    {
-      int m = -1;
-      
-      do{
-	++m;
-	squr.row += moveon.x[m], squr.col += moveon.y[m];
-	}while(ispossible(squr, board->dim));
-      
-      if(!isfinished(board)) return false;
-      end = move(board, squr);
+  int i;
+  if (steps == (board->size - 1)) return true;
+
+  for(i = 0; i < 8; ++i) {
+    pair_t next = {
+      current.row + moveon.x[i],
+      current.col + moveon.y[i]
+    };
+
+    if(ispossible(next, board)) {
+      board->board[next.row][next.col] = steps + 1;
+      if(ktour(board, next, steps + 1) == true) return true;
+      else 
+	board->board[next.row][next.col] = false;
     }
-       
-  return false;
+  }
+  
+  return false; 
 }
 
 #define KRED  "\x1B[31m"
@@ -364,23 +347,23 @@ putboard(board_t *c)
     printf("  %c ", i);
   printf("\n");
 
-  for(i = 0; i < c->dim.row; ++i)
-    {
-      printf("%s ", spc);
-      for(j = 0; j < c->dim.col; ++j)
-	printf("+---");
-      printf("+\n");
+  for(i = 0; i < c->dim.row; ++i) {
+    
+    printf("%s ", spc);
+    for(j = 0; j < c->dim.col; ++j)
+      printf("+---");
+    printf("+\n");
 
-      /* 1 2 3... */
-      printf("%-3d", i);
-      for(j = 0; j < c->dim.col; ++j)
-	{printf("|");
-	  if(c->board[i][j]) printf(KGRN);
-	  printf(" %d ", c->board[i][j]);
-	  printf(KNRM);
-	}
-	printf("|\n");
+    /* 1 2 3... */
+    printf("%-3d", i);
+    for(j = 0; j < c->dim.col; ++j) {
+      printf("|");
+      if(c->board[i][j]) printf(KGRN);
+      printf(" %d ", c->board[i][j]);
+      printf(KNRM);
     }
+    printf("|\n");
+  }
 
   printf("%s ", spc);
   for(j = 0; j < c->dim.col; ++j)
