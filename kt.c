@@ -163,8 +163,6 @@ main (int argc, const char **argv)
   checkargs(argc, argv, &start);
   board_t *chess = initboard(&start);  
 
-  
-
   printf("\n");
   
   putboard(chess);  
@@ -210,8 +208,6 @@ and show the log", NULL},
 
   poptSetOtherOptionHelp(optCon, "[OPTIONS]");
 
-
-  
   while((rc = poptGetNextOpt(optCon)) >= 0) 
     switch(rc) {
     case 'd':	debug = true;
@@ -232,7 +228,6 @@ and show the log", NULL},
       poptPrintUsage(optCon, stderr, 0);
       exit(1);
     }
-  
   
   if(debug) printf("[%d, %d]\n", width, height);
 
