@@ -4,7 +4,7 @@
 /* 	   |\. 	   _          _       _     _   _       _                   	*/
 /* 	  /   '.  | | ___ __ (_) __ _| |__ | |_( ___   | |_ ___  _   _ _ __ 	*/
 /*	 /_.'-  \ | |/ | '_ \| |/ _` | '_ \| __|/ __|  | __/ _ \| | | | '__|	*/
-/*  	    /   | |   <| | | | | (_| | | | | |_ \__ \  | || (_) | |_| | |   	*/
+/*	    /   | |   <| | | | | (_| | | | | |_ \__ \  | || (_) | |_| | |   	*/
 /* 	   /____| |_|\_|_| |_|_|\__, |_| |_|\__||___/   \__\___/ \__,_|_|   	*/
 /* 	  `.____.'              |___/                                       	*/
 /********************************************************************************/
@@ -147,6 +147,7 @@ bool recursive 	= false;	/* -R --recursive */
 bool algn 	= false;	/* -A --algebric-notation */
 int width;			/* -w --width */
 int height;			/* -h --height */
+  pair_t start = { -1, -1 };
 
 /* <---------------------------------------------------------> 
  * <--------------------( Main Function )--------------------> 
@@ -158,8 +159,7 @@ main (int argc, const char **argv)
   srand(time(NULL));
   
   /* int i, j; */
-  pair_t start = { -1, -1 };
-  puts("@");
+  /* puts("@"); */
   checkargs(argc, argv, &start);
   board_t *chess = initboard(&start);  
 
@@ -181,8 +181,8 @@ main (int argc, const char **argv)
 void
 checkargs(int c, const char **v, pair_t *s)
 {
-  int argrow 	= 0;    
-  int argcol 	= 0;
+  /* int argrow 	= 0;     */
+  /* int argcol 	= 0; */
   char rc;
   
   struct poptOption optionsTable[] = {
@@ -193,9 +193,9 @@ checkargs(int c, const char **v, pair_t *s)
 and show the log", NULL},
     {"algebric-notation", 'A', POPT_ARG_NONE, &algn, \
      'A', "show moves as chess algebric notation", NULL }, 
-    {"row", 'r', POPT_ARG_INT, &argrow, \
+    {"row", 'r', POPT_ARG_INT, &start.row, \
      'r', "set spesifice row to start with", "6" }, 
-    {"column", 'c', POPT_ARG_INT, &argcol,\
+    {"column", 'c', POPT_ARG_INT, &start.col,\
      'c', "set specifice column to start with", "2"},
     {"width", 'w', POPT_ARG_INT, &width, \
      'w', "set the width of the board", "16"},
@@ -216,9 +216,9 @@ and show the log", NULL},
       break;
     case 'A':	algn = true;
       break;
-    case 'r':	s->row = argrow;
+    case 'r':	/* s->row = argrow; */
       break;
-    case 'c':	s->col = argcol;
+    case 'c':	/* s->col = argcol; */
       break;
     case 'w':		/*  */
       break;
@@ -229,8 +229,9 @@ and show the log", NULL},
       exit(1);
     }
   
-  if(debug) printf("[%d, %d]\n", width, height);
-
+  /* if(debug) printf("[%d, %d]\n", width, height); */
+  printf("#%d,%d\n",start.row,start.col);
+  getchar();
   putchar('\n');
   if(recursive) puts("recursive enabled");
   if(algn) puts("algebric notation enabled");
@@ -250,10 +251,18 @@ initboard(pair_t *s)
   t->dim.row = w;
   t->size = DIM(h, w);
 
+  //puts("@");
   /* starting position */
-  if(s->row <= 0 || s->row >= w) s->row = rand() % w;
-  if(s->col <= 0 || s->col >= h) s->col = rand() % h;
+    printf("#%d,%d\n",start.row,start.col);
+    getchar();
+  if((s->row >= 0 && s->row < w)) s->row = rand() % (w-1);
+  /* if(s->row >= w) s->row = rand() %(w-1); */
   
+  if((s->col >= 0 && s->col < h)) s->col = rand() % (h-1);
+  /* if(s->col >= h) s->col = rand() % (h-1); */
+  
+      printf("#%d,%d\n",start.row,start.col);
+  getchar();
   /* allocate memory for the board */
   t->board = (short **) malloc(w * sizeof(short *));
   for(i = 0; i < w; ++i) t->board[i] = (short *) malloc( h * sizeof(short ));

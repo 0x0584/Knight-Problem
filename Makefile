@@ -7,7 +7,7 @@ CFLAGS = -Wall -Werror -ggdb -std=c99
 OBJ = kt.o
 SRC = kt.c
 LDFLAGS = -lpopt
-ARGS = -dRA -r 0 -c 0 -w 8 -h 8
+ARGS = -dRA -w 5 -c 5
 EXEC = x
 #
 all:
