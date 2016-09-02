@@ -42,10 +42,15 @@
 
 /* <--------------------( Enumerations )--------------------> */
 /* Boolean type.  */
+#ifndef __cplusplus
+
 typedef enum __BOOLEAN {
   false = (1 == 0),
   true = !false
 } bool;
+
+#endif
+
 
 /* <--------------------( Data Structures )--------------------> */
 /* The knight move is unusual among chess pieces. When it moves,
