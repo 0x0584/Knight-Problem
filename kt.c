@@ -1,4 +1,3 @@
-/* test */
 /********************************************************************************/
 /* 				Anas Rchid - fall 2016 				*/
 /*				   Lisence: GPL (v2)				*/
@@ -153,7 +152,7 @@ bool recursive 	= false;	/* -R --recursive */
 bool algn 	= false;	/* -A --algebric-notation */
 int width;			/* -w --width */
 int height;			/* -h --height */
-  pair_t start = { -1, -1 };
+pair_t start = { -1, -1 };
 
 /* <---------------------------------------------------------> 
  * <--------------------( Main Function )--------------------> 
@@ -259,15 +258,15 @@ initboard(pair_t *s)
 
   //puts("@");
   /* starting position */
-    printf("#%d,%d\n",start.row,start.col);
-    getchar();
+  printf("#%d,%d\n",start.row,start.col);
+  getchar();
   if((s->row >= 0 && s->row < w)) s->row = rand() % (w-1);
   /* if(s->row >= w) s->row = rand() %(w-1); */
   
   if((s->col >= 0 && s->col < h)) s->col = rand() % (h-1);
   /* if(s->col >= h) s->col = rand() % (h-1); */
   
-      printf("#%d,%d\n",start.row,start.col);
+  printf("#%d,%d\n",start.row,start.col);
   getchar();
   /* allocate memory for the board */
   t->board = (short **) malloc(w * sizeof(short *));
@@ -348,7 +347,12 @@ void
 putboard(board_t *c)
 {
   int i, j;
+#ifndef __cplusplus
   char *spc = "  ";
+#else
+  const char *spc = "  ";
+#endif
+
   
   printf("%s ", spc);
   
