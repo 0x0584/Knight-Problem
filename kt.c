@@ -248,7 +248,12 @@ board_t *
 initboard(pair_t *s)
 {
   int i, j;
-  int w = (w = width) <= 0 ? 8 : w, h = (h = height) <= 0 ? w : h;
+/* #ifndef __cplusplus */
+  int w = ((w = width) <= 0 ? 8 : w), h = ((h = height) <= 0 ? w : h);
+/* #else */
+  
+/* #endif */
+
   board_t *t = (board_t *) malloc(sizeof(board_t ));
   
   /* board dimensions */
